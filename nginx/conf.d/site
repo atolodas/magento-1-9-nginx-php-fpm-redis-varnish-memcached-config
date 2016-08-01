@@ -1,0 +1,162 @@
+server {
+      listen 8080 default;
+      #listen [::]:8080 ipv6only=on  default;
+      server_name site.com;
+      root /usr/share/nginx/;
+      index index.html index.htm index.php;
+
+      gzip              on;
+      gzip_buffers      16 8k;
+      gzip_comp_level   1;
+      gzip_http_version 1.1;
+      gzip_min_length   2;
+      gzip_types        text/plain text/css application/x-javascript text/xml application/xml application/xml+rss text/javascript font/ttf application/ttf application/x-ttf;
+      gzip_vary         on;
+      gzip_proxied      any; # Compression for all requests.
+      gzip_disable "msie6";
+      gzip_static off;
+      
+
+     location ~* ^.+\.(jpg|jpeg|gif|png|ico|svg|svgz|ttf|otf|woff|eot|ttc)$ {
+		expires max;
+		etag off;
+		aio on;
+		access_log off;
+		open_file_cache max=1000 inactive=20s;
+		open_file_cache_valid 30s;
+		open_file_cache_min_uses 2;
+		open_file_cache_errors on;
+		add_header Pragma "public";
+		add_header Cache-Control "max-age=31536000, public";
+		fastcgi_hide_header Set-Cookie;
+		add_header Access-Control-Allow-Origin *;
+	}
+	location ~* ^.+\.(js|css)$ {
+		expires modified 31536000s;
+    		add_header Vary "Accept-Encoding";
+    		add_header Pragma "public";
+    		add_header Cache-Control "max-age=31536000, public";
+		fastcgi_hide_header Set-Cookie;
+                add_header Access-Control-Allow-Origin *;
+		etag off;
+		aio on;
+                access_log off;
+                open_file_cache max=1000 inactive=20s;
+                open_file_cache_valid 30s;
+                open_file_cache_min_uses 2;
+                open_file_cache_errors on;
+
+	}
+
+	#location ~ \.(wmv|avi|bmp|doc|docx|pe|json|mdb|mid|midi|mov|qt|mp3|m4a|mp4|m4v|mpeg|mpg|mpe|mpp|otf|odb|odc|odf|odg|odp|ods|odt|ogg|pdf|png|pot|pps|ppt|pptx|ra|ram|svg|svgz|swf|tar|tif|tiff|ttf|ttc|wav|wma|wri|woff|xla|xls|xlsx|xlt|xlw|zip)$ {
+    	#	expires 31536000s;
+    	#	add_header Pragma "public";
+    	#	add_header Cache-Control "max-age=31536000, public";
+   	#}
+
+	#location /phpmyadmin {
+        #       root /usr/share/;
+        #       index index.php index.html index.htm;
+        #       location ~ ^/phpmyadmin/(.+\.php)$ {
+        #               try_files $uri =404;
+        #               root /usr/share/;
+        #               fastcgi_pass unix:/var/run/php5-fpm.sock;
+        #               fastcgi_index index.php;
+        #               fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        #               include /etc/nginx/fastcgi_params;
+        #       }
+	#}
+
+	location /atendimento-online-2 {
+    	
+	    try_files $uri $uri/ /atendimento-online-2/index.php?q=$uri&$args;
+	    proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+        }
+
+	#include /etc/nginx/magento/seguro;
+
+	location / {
+        	try_files $uri $uri/ @handler;  
+	}
+
+	location ~ \.html$ {
+    		if (!-f $request_filename) {
+        	rewrite ^(.*)\.html$ $1 permanent;
+    	}
+	}
+
+	location @handler {
+        	rewrite / /index.php?$args;
+	}
+
+
+	location =/js/index.php/x.js {
+        	rewrite ^(.*\.php)/ $1 last;
+	}
+
+      set $my_http "http";
+      set $my_ssl "off";
+      set $my_port "80";
+
+      if ($http_x_forwarded_proto = "https") {
+       set $my_http "https";
+       set $my_ssl "on";
+       set $my_port "443";
+      }
+
+       set_real_ip_from 127.0.0.1;
+       real_ip_header X-Forwarded-For;
+       real_ip_recursive on;
+
+
+       port_in_redirect off;       
+       server_name_in_redirect off;
+       proxy_set_header  X-Real-IP  $realip_remote_addr;#$remote_addr;
+       proxy_set_header X-Forwarded-For $realip_remote_addr;#$remote_addr;
+       proxy_set_header Host $http_host;
+       proxy_redirect off;
+       proxy_set_header X-Forwarded-Proto $scheme;
+
+set $site_ssl "off";
+if ($scheme = "https") {
+    set $site_ssl "on";
+}
+
+location ~ \.(hh|php)$ {
+       fastcgi_split_path_info ^(.+?\.php)(/.*)$;
+       if (!-e $request_filename) { rewrite / /index.php last; } ## Catch 404s that try_files miss
+       expires        off; ## Do not cache dynamic content
+     
+
+		fastcgi_pass unix:/var/run/php/php5.6-fpm.sock;
+
+
+	if ($request_uri ~ ^/(shipping|tracking)){
+                fastcgi_pass unix:/var/run/hhvm/hhvm.sock;
+
+        }
+
+
+       #proxy_http_version 1.1;
+       #proxy_set_header Connection "";
+       #proxy_max_temp_file_size 0;
+       #fastcgi_pass unix:/var/run/hhvm/hhvm.sock;
+       fastcgi_keep_conn on;
+       fastcgi_index  index.php;
+       #fastcgi_pass unix:/var/run/php5-fpm.sock;
+       #fastcgi_param SERVER_PORT $my_port;
+       proxy_set_header X-Forwarded-Port $my_port;#443;
+       fastcgi_param HTTPS $my_ssl;
+       #add_header X-Processing-Time $request_time;
+       fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+       fastcgi_buffer_size 128k;
+       fastcgi_buffers 256 16k;
+       fastcgi_busy_buffers_size 256k;
+       fastcgi_temp_file_write_size 256k;
+       proxy_redirect off;
+       include        fastcgi_params; ## See /etc/nginx/fastcgi_params
+
+
+        }
+}

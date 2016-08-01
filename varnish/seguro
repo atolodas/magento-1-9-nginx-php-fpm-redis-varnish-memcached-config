@@ -1,0 +1,21 @@
+ 	if (req.http.referer && req.http.referer ~ "^http://semalt.com" 
+	|| req.http.referer ~ "^http://traffic2cash.xyz"
+	|| req.http.referer ~ "^http://site-60993358-1.snip.tw"
+	|| req.http.referer ~ "^http://share-buttons.xyz"
+	|| req.http.referer ~ "^http://website-stealer.nufaq.com"
+	|| req.http.referer ~ "^http://build-a-better-business.2your.site"
+	|| req.http.referer ~ "^http://santasgift.ml"
+	|| req.http.referer ~ "^http://new-look.for-your.website"
+	|| req.http.referer ~ "^http://smarter-content.for-your.website"
+	|| req.http.referer ~ "^http://build-audience.for-your.website"
+	|| req.http.referer ~ "^http://happy.new.yeartwit.com"
+	|| req.http.referer ~ "^http://govome4.insppartner.com"
+	|| req.http.referer ~ "^http://rusexy.xyz"
+	|| req.http.referer ~ "^http://santasgift.ml"
+	|| req.http.referer ~ "^http://free-traffic.xyz"
+	|| req.http.referer ~ "^http://how.to.travel.and.make.money.with.maps.ilikevitaly.com"
+	) {
+   		error 403 " Tente acessar o site diretamente, sem clicar em links de outros sites, por favor.";
+  	}
+
+	

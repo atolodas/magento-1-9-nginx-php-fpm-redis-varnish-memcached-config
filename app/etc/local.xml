@@ -1,0 +1,95 @@
+<!-- Conexões via Unix, Sessão com Redis e dois níveis de cache com Apc e Memcached -->
+<resources>
+            <db>
+                <table_prefix><![CDATA[]]></table_prefix>
+            </db>
+            <default_setup>
+                <connection>
+                    <host><![CDATA[/var/run/mysqld/mysqld.sock]]></host>
+                    <username><![CDATA[USUARIO]]></username>
+                    <password><![CDATA[SENHA]]></password>
+                    <dbname><![CDATA[NOMEBANCO]]></dbname>
+                    <initStatements><![CDATA[SET NAMES utf8]]></initStatements>
+                    <model><![CDATA[mysql4]]></model>
+                    <type><![CDATA[pdo_mysql]]></type>
+                    <pdoType><![CDATA[]]></pdoType>
+                    <active>1</active>
+                </connection>
+            </default_setup>
+</resources>
+<session_save><![CDATA[db]]></session_save>
+        <redis_session>
+            <host>/var/run/redis/redis.sock</host>
+            <port>6379</port>
+            <password></password>
+            <timeout>2.5</timeout>
+            <persistent>0</persistent>
+            <db>0</db>
+            <compression_threshold>0</compression_threshold>
+            <compression_lib>gzip</compression_lib>
+            <log_level>4</log_level>
+            <max_concurrency>6</max_concurrency>
+            <break_after_frontend>5</break_after_frontend>
+            <break_after_adminhtml>30</break_after_adminhtml>
+            <first_lifetime>660</first_lifetime>
+            <bot_first_lifetime>60</bot_first_lifetime>
+            <bot_lifetime>7200</bot_lifetime>
+            <disable_locking>0</disable_locking>
+            <min_lifetime>60</min_lifetime>
+            <max_lifetime>2592000</max_lifetime>
+        </redis_session>
+        <cache>
+      <backend>memcached</backend>
+
+      <backend_options>
+                    <enable_two_levels>true</enable_two_levels>
+      </backend_options>
+
+      <slow_backend>Apc</slow_backend>
+      <fast_backend>memcahed</fast_backend>
+      <auto_refresh_fast_cache>1</auto_refresh_fast_cache>
+      <slow_backend_store_data>0</slow_backend_store_data>
+      <prefix>deco_</prefix>
+      <default_priority>10</default_priority>
+      <lifetime>259200</lifetime>
+      <fast_backend_options>
+      <servers>
+                          <server>
+                                  <host>/var/tmp/memcache.socket</host>
+                                  <port>11211</port>
+                                  <persistent>1</persistent>
+                                  <weight><![CDATA[2]]></weight>
+                                  <timeout><![CDATA[10]]></timeout>
+                                  <retry_interval><![CDATA[10]]></retry_interva$
+                                  <status><![CDATA[1]]></status>
+                                </server>
+                        </servers>
+
+                <compression><![CDATA[0]]></compression>
+                <cache_dir><![CDATA[]]></cache_dir>
+                <hashed_directory_level><![CDATA[]]></hashed_directory_level>
+                <hashed_directory_umask><![CDATA[]]></hashed_directory_umask>
+                <file_name_prefix><![CDATA[]]></file_name_prefix>
+
+
+
+      </fast_backend_options>
+<memcached>
+                 <servers>
+                          <server>
+                                  <host>/var/tmp/memcache.socket</host>
+                                  <port>11211</port>
+                                  <persistent>1</persistent>
+                                  <weight><![CDATA[2]]></weight>
+                                  <timeout><![CDATA[10]]></timeout>
+                                  <retry_interval><![CDATA[10]]></retry_interva$
+                                  <status><![CDATA[1]]></status>
+                                </server>
+                        </servers>
+                <compression><![CDATA[0]]></compression>
+                <cache_dir><![CDATA[]]></cache_dir>
+                <hashed_directory_level><![CDATA[]]></hashed_directory_level>
+                <hashed_directory_umask><![CDATA[]]></hashed_directory_umask>
+                <file_name_prefix><![CDATA[]]></file_name_prefix>
+      </memcached>
+</cache>
